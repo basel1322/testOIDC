@@ -1,0 +1,62 @@
+name: "JFrog-GitHub NPM Publish OIDC Integration"
+on: push
+
+# This is required as per
+# https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-cloud-providers#adding-permissions-settings
+permissions:
+  id-token: write
+
+jobs:
+  build:
+     runs-on: ubuntu-latest
+     env:
+      OIDC_AUDIENCE: 'jfrog-github'
+      OIDC_PROVIDER: 'github'
+      PLATFORM_REPO: 'eks-npm-npm'
+     defaults:
+      run:
+        working-directory: ./package
+     steps:
+       - name: Checkout
+         uses: actions/checkout@v3
+              
+       - name: Print Specific Environment Variables
+         run: |
+           echo "OIDC_AUDIENCE is set to: ${{ env.OIDC_AUDIENCE }}"
+           echo "OIDC_PROVIDER is set to: ${{ env.OIDC_PROVIDER }}"
+           echo "JFrog URL is set to: ${{ secrets.JF_URL }}" # Caution: This will print the JFrog URL
+       
+       - name: Print All Environment Variables
+         run: printenv
+
+       - name: Setup Node npm
+         uses: actions/setup-node@v3
+   
+       - name: Setup JFrog CLI
+         uses: jfrog/setup-jfrog-cli@v3
+         env:  
+           JF_URL: ${{ secrets.JF_URL }}
+         with:
+           oidc-provider-name: ${{ env.OIDC_PROVIDER }}
+           oidc-audience: ${{ env.OIDC_AUDIENCE }}
+
+       - name: Set CLI Config
+         run:  jf npm-config  --repo-resolve=$PLATFORM_REPO --repo-deploy=$PLATFORM_REPO
+           
+       - name: Install Dependencies
+         run: jf npm install
+           
+       - name: Run tests
+         run: npm test
+         
+       - name: Publish
+         run: jf npm publish
+         
+       - name: Publish Build info With JFrog CLI
+         run: |
+          # Collect environment variables for the build
+          jf rt build-collect-env
+          # Collect VCS details from git and add them to the build
+          jf rt build-add-git
+          # Publish build info
+          jf rt build-publish
