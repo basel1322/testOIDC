@@ -6,8 +6,11 @@ on:
 jobs:
   docker:
     runs-on: ubuntu-latest
+    env:
+      DOCKER_REPO: ${{ secrets.DOCKER_REPO }}  # Set DOCKER_REPO as a job-level environment variable
+
     steps:
-      - name: Checkout
+      - name: Checkout Source Code
         uses: actions/checkout@v4
 
       - name: Set up QEMU
@@ -19,14 +22,14 @@ jobs:
       - name: Login to JFrog Artifactory
         run: echo "${{ secrets.JF_TOKEN }}" | docker login ${{ secrets.JF_URL }} -u ${{ secrets.JF_USERNAME }} --password-stdin
 
-      - name: Build and push to JFrog Artifactory
+      - name: Build and Push Docker Image to JFrog Artifactory
         uses: docker/build-push-action@v6
         with:
-          context: .
+          context: .  # Use `.` if Dockerfile is at the root of the repository
           push: true
-          tags: elinaf.jfrog.io/test-local-basselm/oceaneeringg/actions-runnerr-linux:0.1.2-beta.14
+          tags: elinaf.jfrog.io/test-local-basselm/oceaneeringg/actions-runnerrr-linux:0.1.2-beta.14
 
-      - name: Setup JFrog CLI
+      - name: Set up JFrog CLI
         uses: jfrog/setup-jfrog-cli@v3
         env:
           JF_URL: ${{ secrets.JF_URL }}
@@ -42,5 +45,5 @@ jobs:
           # Collect VCS details from git and add them to the build
           jf rt build-add-git github-actions-build 1
 
-          # Publish build info
+          # Publish build info to JFrog Artifactory
           jf rt build-publish github-actions-build 1
