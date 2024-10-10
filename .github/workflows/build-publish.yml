@@ -24,7 +24,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.JF_URL }}/$DOCKER_REPO/user/app:latest
+          tags: elinaf.jfrog.io/test-local-basselm/oceaneeringg/actions-runnerr-linux:0.1.2-beta.14
 
       - name: Setup JFrog CLI
         uses: jfrog/setup-jfrog-cli@v3
