@@ -40,7 +40,7 @@ jobs:
           jf c add my-server --url=${{ secrets.JF_URL }} --user=${{ secrets.JF_USERNAME }} --password=${{ secrets.JF_TOKEN }} --interactive=false
           
           # Collect environment variables for the build
-          jf rt build-collect-env github-actions-build 1 --server-id=my-server
+          jf rt build-collect-env github-actions-build 1 
 
           # Collect VCS details from git and add them to the build
           jf rt build-add-git github-actions-build 1 --server-id=my-server
