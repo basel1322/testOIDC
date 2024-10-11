@@ -38,7 +38,8 @@ jobs:
 
       - name: Push Docker Image to JFrog Artifactory
         run: |
-          jf rt docker-push elinaf.jfrog.io/test-local-basselm/oceaneering/actions-runner-linux:0.1.2-beta.14 elinaf.jfrog.io/test-local-basselm/oceaneering-bassel/actions-runner-linux:0.1.2-beta.14 --server-id=my-server
+         jf rt docker-push elinaf.jfrog.io/test-local-basselm/oceaneering/actions-runner-linux:0.1.2-beta.14 --server-id=my-server
+
 
       - name: Publish Build Info with JFrog CLI
         run: |
