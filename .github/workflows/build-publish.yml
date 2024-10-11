@@ -9,6 +9,10 @@ jobs:
     env:
       DOCKER_REPO: ${{ secrets.DOCKER_REPO }}  # Set DOCKER_REPO as a job-level environment variable
 
+    permissions:
+      contents: read
+      id-token: write  # <-- Add this to grant the permission to request the OIDC token
+
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
@@ -30,8 +34,15 @@ jobs:
 
       - name: Login to JFrog Artifactory using OIDC
         run: |
+          # Retrieve ID token
+          ID_TOKEN=$(curl -sLS -H "User-Agent: actions/oidc-client" -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+          "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=Jfrog-github" | jq -r .value)
+          
+          # Exchange ID token for an access token
           ACCESS_TOKEN=$(curl -XPOST -H "Content-Type: application/json" "https://elinaf.jfrog.io/access/api/v1/oidc/token" \
           -d "{\"grant_type\": \"urn:ietf:params:oauth:grant-type:token-exchange\", \"subject_token_type\":\"urn:ietf:params:oauth:token-type:id_token\", \"subject_token\": \"${ID_TOKEN}\", \"provider_name\": \"test1322\"}" | jq -r .access_token)
+          
+          # Use the access token for docker login
           echo "${ACCESS_TOKEN}" | docker login ${{ secrets.JF_URL }} -u ${{ secrets.JF_USERNAME }} --password-stdin
 
       - name: Build and Push Docker Image to JFrog Artifactory
