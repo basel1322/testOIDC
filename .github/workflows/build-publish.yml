@@ -1,7 +1,6 @@
 name: ci
 
-on:
-  push:
+on: [push]
 
 jobs:
   docker:
@@ -28,6 +27,8 @@ jobs:
 
       - name: Set up JFrog CLI
         uses: jfrog/setup-jfrog-cli@v4
+        with:
+          oidc-provider-name: github
         env:
           JF_URL: ${{ secrets.JF_URL }}
 
