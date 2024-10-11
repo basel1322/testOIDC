@@ -1,4 +1,4 @@
-name: cii
+name: ci
 
 on:
   push:
@@ -39,3 +39,10 @@ jobs:
       - name: Push Docker Image to JFrog Artifactory
         run: |
          jf docker push elinaf.jfrog.io/test-local-basselm/oceaneering/actions-runner-linux:0.1.2-beta.14
+
+
+      - name: Publish Build Info with JFrog CLI
+        run: |
+          jf rt build-collect-env github-actions-build 1
+          jf rt build-add-git github-actions-build 1
+          jf rt build-publish github-actions-build 1
