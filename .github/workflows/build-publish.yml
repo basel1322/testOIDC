@@ -1,3 +1,4 @@
+name: ci
 
 on:
   push:
@@ -15,7 +16,7 @@ jobs:
       - name: Set up JFrog CLI with OIDC
         uses: jfrog/setup-jfrog-cli@v4
         env:
-          JF_URL: https://elinaf.jfrog.io 
+          JF_URL: https://elinaf.jfrog.io
         with:
           oidc-provider-name: test1322
           oidc-audience: Jfrog-github
@@ -27,8 +28,11 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Login to JFrog Artifactory
-        run: echo "${{ secrets.JF_TOKEN }}" | docker login ${{ secrets.JF_URL }} -u ${{ secrets.JF_USERNAME }} --password-stdin
+      - name: Login to JFrog Artifactory using OIDC
+        run: |
+          ACCESS_TOKEN=$(curl -XPOST -H "Content-Type: application/json" "https://elinaf.jfrog.io/access/api/v1/oidc/token" \
+          -d "{\"grant_type\": \"urn:ietf:params:oauth:grant-type:token-exchange\", \"subject_token_type\":\"urn:ietf:params:oauth:token-type:id_token\", \"subject_token\": \"${ID_TOKEN}\", \"provider_name\": \"test1322\"}" | jq -r .access_token)
+          echo "${ACCESS_TOKEN}" | docker login ${{ secrets.JF_URL }} -u ${{ secrets.JF_USERNAME }} --password-stdin
 
       - name: Build and Push Docker Image to JFrog Artifactory
         uses: docker/build-push-action@v6
