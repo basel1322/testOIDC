@@ -38,10 +38,10 @@ jobs:
         run: |
           # Configure JFrog CLI with username and token
           jf c add my-server --url=${{ secrets.JF_URL }} --user=${{ secrets.JF_USERNAME }} --password=${{ secrets.JF_TOKEN }} --interactive=false
-          
+          jf c use my-server
           # Collect environment variables for the build
           jf rt build-collect-env github-actions-build 1 
           # Collect VCS details from git and add them to the build
-          jf rt build-add-git github-actions-build 1 --server-id=my-server
+          jf rt build-add-git github-actions-build 1 
           # Publish build info to JFrog Artifactory
-          jf rt build-publish github-actions-build 1 --server-id=my-server
+          jf rt build-publish github-actions-build 1
