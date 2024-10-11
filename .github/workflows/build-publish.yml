@@ -48,7 +48,7 @@ jobs:
         with:
           oidc-provider-name: test1322
           oidc-audience: Jfrog-github
-          PLATFORM-REPO: docker
+          PLATFORM-REPO: test-local-basselm
 
       - name: Login to JFrog Artifactory using OIDC
         run: |
