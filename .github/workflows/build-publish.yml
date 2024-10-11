@@ -22,21 +22,30 @@ jobs:
       - name: Login to JFrog Artifactory
         run: echo "${{ secrets.JF_TOKEN }}" | docker login ${{ secrets.JF_URL }} -u ${{ secrets.JF_USERNAME }} --password-stdin
 
-      - name: Build and Push Docker Image to JFrog Artifactory
-        uses: docker/build-push-action@v6
-        with:
-          context: .  # Use `.` if Dockerfile is at the root of the repository
-          push: true
-          tags: elinaf.jfrog.io/test-local-basselm/oceaneeringg/actions-runnerrr-linux:0.1.2-beta.14
+      - name: Build Docker Image
+        run: |
+          docker build -t elinaf.jfrog.io/test-local-basselm/oceaneeringg/actions-runnerrr-linux:0.1.2-beta.14 .
 
       - name: Set up JFrog CLI
         uses: jfrog/setup-jfrog-cli@v4
         env:
           JF_URL: ${{ secrets.JF_URL }}
 
-      - name: Publish Build Info with JFrog CLI
+      - name: Configure JFrog CLI
         run: |
           # Configure JFrog CLI with username and token
           jf c add my-server --url=${{ secrets.JF_URL }} --user=${{ secrets.JF_USERNAME }} --password=${{ secrets.JF_TOKEN }} --interactive=false
           jf c use my-server
-          jf docker push elinaf.jfrog.io/test-local-basselm/oceaneeringg/actions-runnerrr-linux:0.1.2-beta.14
+
+      - name: Push Docker Image to JFrog Artifactory
+        run: |
+          jf rt docker-push elinaf.jfrog.io/test-local-basselm/oceaneeringg/actions-runnerrr-linux:0.1.2-beta.14 test-local-basselm/oceaneeringg/actions-runnerrr-linux:0.1.2-beta.14 
+          
+      - name: Publish Build Info with JFrog CLI
+        run: |
+          # Collect environment variables for the build
+          jf rt build-collect-env github-actions-build 1
+          # Collect VCS details from git and add them to the build
+          jf rt build-add-git github-actions-build 1 
+          # Publish build info to JFrog Artifactory
+          jf rt build-publish github-actions-build 1 
