@@ -17,8 +17,8 @@ jobs:
         env:
           JF_URL: https://elinaf.jfrog.io 
         with:
-          oidc-provider-name: test
-          oidc-audience: Jfrog-githubname
+          oidc-provider-name: test1322
+          oidc-audience: Jfrog-github
           PLATFORM-REPO: docker
 
       - name: Set up QEMU
