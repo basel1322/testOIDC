@@ -33,10 +33,11 @@ jobs:
 
       - name: Configure JFrog CLI
         run: |
-          export BUILD_MODULE="my-module"
+    
           jf c add my-server --url=${{ secrets.JF_URL }} --user=${{ secrets.JF_USERNAME }} --password=${{ secrets.JF_TOKEN }} --interactive=false
           jf c use my-server
 
       - name: Push Docker Image to JFrog Artifactory
         run: |
+         export BUILD_MODULE="my-module"
          jf docker push elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14 --build-name github-actions-build --build-number 1 --module $BUILD_MODULE
