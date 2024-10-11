@@ -35,12 +35,8 @@ jobs:
       - name: Login to JFrog Artifactory using OIDC
         run: |
           # Retrieve ID token
-          ID_TOKEN=$(curl -sLS -H "User-Agent: actions/oidc-client" -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
-          "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=Jfrog-github" | jq -r .value)
-          
-          # Exchange ID token for an access token
-          ACCESS_TOKEN=$(curl -XPOST -H "Content-Type: application/json" "https://elinaf.jfrog.io/access/api/v1/oidc/token" \
-          -d "{\"grant_type\": \"urn:ietf:params:oauth:grant-type:token-exchange\", \"subject_token_type\":\"urn:ietf:params:oauth:token-type:id_token\", \"subject_token\": \"${ID_TOKEN}\", \"provider_name\": \"test1322\"}" | jq -r .access_token)
+      
+          ACCESS_TOKEN= 'eyJ2ZXIiOiIyIiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYiLCJraWQiOiItbk5RVFcwUUJQMDN6bkc0YWNKeHMza19MdTMwZHBrNktKUnBiN0RMVnhRIn0.eyJzdWIiOiJqZmFjQDAxZjgyZHpqd3liYjJnMDlzdzZicW4wempoL3VzZXJzL2Jhc3NlbG0iLCJzY3AiOiJhcHBsaWVkLXBlcm1pc3Npb25zL2FkbWluIiwiYXVkIjoiKkAqIiwiaXNzIjoiamZmZUAwMWY4MmR6and5YmIyZzA5c3c2YnFuMHpqaCIsImlhdCI6MTcyODYyOTI4MCwianRpIjoiZTY5NTU5ODAtNDNlYS00OWE4LTg0OTEtNjI3ZDYxNzNkMTMyIiwidGlkIjoiYTB6eTJlYWpkZXR4NSJ9.A2jquym4hQTqy5YpzqhTjY2FqsCGHaYn-5Pj86sdIDQlX0glWrikY-M3xda2Zs1xliHYNgvLULF-X8Nu1hmAEwxwDyny2qnQ0G47nlxpcfPphOS7xTsZnXh-59gs_dGxlAO5SqgNZpmk8g2VWaOlW6No--qYoJi8f5C2DwZzwzQaFuTJy4dMpkRC8o5UhWLFHNrtisrQ_3KjYv91sW5wQhQhfUE3ScsovQFmWiur4ClvdT63_nD3iIOPGO3Zovc8gIfS9ApFB5RTows81s248dxJJ56hmrJ8kX7SdxVyfaD9g_qcMmfDkCgfvkEw-mzyIETTj6eX60a_8jkxwsuFfQ'
           
           # Use the access token for docker login
           echo "${ACCESS_TOKEN}" | docker login ${{ secrets.JF_URL }} -u ${{ secrets.JF_USERNAME }} --password-stdin
