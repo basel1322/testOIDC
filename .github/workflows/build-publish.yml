@@ -44,9 +44,9 @@ jobs:
       - name: Create metadata.json
         run: |
           # Get the image digest after pushing
-          DIGEST=$(jf docker inspect elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14 --format '{{.RepoDigests}}' | awk -F '@' '{print $2}')
+          DIGEST=$(docker inspect elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14 --format '{{index .RepoDigests 0}}' | awk -F '@' '{print $2}')
           # Create metadata.json with the required format
-          echo "elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14@${DIGEST}" > metadata.json
+          echo "elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14@sha256:${DIGEST}" > metadata.json
           # Optional: Print the content for debugging
           cat metadata.json
 
