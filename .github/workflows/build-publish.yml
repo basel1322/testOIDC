@@ -51,11 +51,12 @@ jobs:
             echo "Error: Docker image digest not found."
             exit 1
           fi
-          echo "::set-output name=digest::$DIGEST"
+          echo "Docker image digest: $DIGEST"  # Print the digest for confirmation
+          echo "digest=$DIGEST" >> $GITHUB_ENV  # Use the newer method to set environment variables
 
       - name: Deploy build-info
         run: |
-          echo "elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14@${{ steps.digest.outputs.digest }}" > metadata.json
+          echo "elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14@${{ env.digest }}" > metadata.json
           jf rt build-docker-create test-local-basselm --image-file metadata.json
           jf rt bce github-actions-build 1
           jf rt bag github-actions-build 1
