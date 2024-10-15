@@ -42,15 +42,15 @@ jobs:
           jf rt build-publish github-actions-build 1
 
       # New Steps to push, deploy build info, and promote the build
-      - name: Push Docker Image
-        id: push
+      - name: Retrieve Docker Image Digest
+        id: digest
         run: |
-          jf docker push elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14 --build-name github-actions-build --build-number 1
-          echo "::set-output name=digest::$(jf docker inspect --format '{{.RepoDigests}}' elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14)"
+          DIGEST=$(jf rt docker-get elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14 --output=json | jq -r .digest)
+          echo "::set-output name=digest::$DIGEST"
 
       - name: Deploy build-info
         run: |
-          echo "elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14@${{ steps.push.outputs.digest }}" > metadata.json
+          echo "elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14@${{ steps.digest.outputs.digest }}" > metadata.json
           jf rt build-docker-create test-local-basselm --image-file metadata.json
           jf rt bce github-actions-build 1
           jf rt bag github-actions-build 1
