@@ -41,11 +41,16 @@ jobs:
           jf docker push elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14 --build-name github-actions-build --build-number 1 --module $BUILD_MODULE
           jf rt build-publish github-actions-build 1
 
-      # New Steps to push, deploy build info, and promote the build
       - name: Retrieve Docker Image Digest
         id: digest
         run: |
-          DIGEST=$(jf rt docker-get elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14 --output=json | jq -r .digest)
+          OUTPUT=$(jf rt docker-get elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14 --output=json)
+          echo "Raw output: $OUTPUT"  # Debugging line to check output
+          DIGEST=$(echo "$OUTPUT" | jq -r .digest)
+          if [ -z "$DIGEST" ]; then
+            echo "Error: Docker image digest not found."
+            exit 1
+          fi
           echo "::set-output name=digest::$DIGEST"
 
       - name: Deploy build-info
