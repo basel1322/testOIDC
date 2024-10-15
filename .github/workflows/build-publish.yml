@@ -43,11 +43,10 @@ jobs:
 
       # New Steps to push, deploy build info, and promote the build
       - name: Push Docker Image
-        uses: docker/build-push-action@v4
-        with:
-          tags: |
-            elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14
-          push: true
+        id: push
+        run: |
+          jf docker push elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14 --build-name github-actions-build --build-number 1
+          echo "::set-output name=digest::$(jf docker inspect --format '{{.RepoDigests}}' elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14)"
 
       - name: Deploy build-info
         run: |
