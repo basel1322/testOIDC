@@ -39,7 +39,7 @@ jobs:
         id: push
         run: |
           export BUILD_MODULE="my-module"
-          jf docker push elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14 --build-name github-actions-build --build-number 1 --module $BUILD_MODULE 
+          jf docker push elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14 --build-name github-actions-build --build-number 1 --module $BUILD_MODULE
 
       - name: Create metadata.json
         id: create_metadata
