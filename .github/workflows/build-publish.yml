@@ -52,7 +52,7 @@ jobs:
 
       - name: Deploy build-info
         run: |
-          jf rt build-docker-create --project test-local-basselm --image-file metadata.json
+          jf rt build-docker-create test-local-basselm --image-file metadata.json
           jf rt bce github-actions-build 1
           jf rt bag github-actions-build 1
           jf rt bp github-actions-build 1 --dry-run
