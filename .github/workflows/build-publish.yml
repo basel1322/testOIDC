@@ -47,7 +47,7 @@ jobs:
           # Get the image digest after pushing
           DIGEST=$(docker inspect elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14 --format '{{index .RepoDigests 0}}' | awk -F '@' '{print $2}')
           # Ensure the digest format is sha256:sha256:<digest>
-          echo "elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14@sha256:${DIGEST}" > metadata.json
+          echo "elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14@${DIGEST}" > metadata.json
           # Log the content of metadata.json for debugging
           echo "Content of metadata.json:"
           cat metadata.json
@@ -58,7 +58,7 @@ jobs:
           echo "Using the following metadata.json:"
           cat metadata.json
           
-          jf rt build-docker-create --project test-local-basselm --image-file metadata.json
+          jf rt build-docker-create  test-local-basselm --image-file metadata.json
           jf rt bce github-actions-build 1
           jf rt bag github-actions-build 1
           jf rt bp github-actions-build 1 --dry-run
