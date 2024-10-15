@@ -23,7 +23,7 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14 .
+          docker build -t elinaf.jfrog.io/test-local-basselm/oceaneeringggg/actions-runner-linux:0.1.2-beta.14 .
 
       - name: Set up JFrog CLI
         uses: jfrog/setup-jfrog-cli@v4
@@ -39,14 +39,14 @@ jobs:
         id: push
         run: |
           export BUILD_MODULE="my-module"
-          jf docker push elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14 --build-name github-actions-build --build-number 1 --module $BUILD_MODULE
+          jf docker push elinaf.jfrog.io/test-local-basselm/oceaneeringggg/actions-runner-linux:0.1.2-beta.14 --build-name github-actions-build --build-number 1 --module $BUILD_MODULE
 
       - name: Create metadata.json
         run: |
           # Get the image digest after pushing
-          DIGEST=$(docker inspect elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14 --format '{{index .RepoDigests 0}}' | awk -F '@' '{print $2}')
+          DIGEST=$(docker inspect elinaf.jfrog.io/test-local-basselm/oceaneeringggg/actions-runner-linux:0.1.2-beta.14 --format '{{index .RepoDigests 0}}' | awk -F '@' '{print $2}')
           # Create metadata.json with the required format
-          echo "elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14@sha256:sha256:${DIGEST}" > metadata.json
+          echo "elinaf.jfrog.io/test-local-basselm/oceaneeringggg/actions-runner-linux:0.1.2-beta.14@sha256:sha256:${DIGEST}" > metadata.json
           # Optional: Print the content for debugging
           cat metadata.json
 
