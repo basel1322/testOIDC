@@ -32,12 +32,34 @@ jobs:
 
       - name: Configure JFrog CLI
         run: |
-    
           jf c add my-server --url=${{ secrets.JF_URL }} --user=${{ secrets.JF_USERNAME }} --password=${{ secrets.JF_TOKEN }} --interactive=false
           jf c use my-server
 
       - name: Push Docker Image to JFrog Artifactory
         run: |
-         export BUILD_MODULE="my-module"
-         jf docker push elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14 --build-name github-actions-build --build-number 1 --module $BUILD_MODULE
-         jf rt build-publish github-actions-build 1
+          export BUILD_MODULE="my-module"
+          jf docker push elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14 --build-name github-actions-build --build-number 1 --module $BUILD_MODULE
+          jf rt build-publish github-actions-build 1
+
+      # New Steps to push, deploy build info, and promote the build
+      - name: Push Docker Image
+        uses: docker/build-push-action@v4
+        with:
+          tags: |
+            elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14
+          push: true
+
+      - name: Deploy build-info
+        run: |
+          echo "elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14@${{ steps.push.outputs.digest }}" > metadata.json
+          jf rt build-docker-create github-actions-build 1 test-local-basselm --image-file metadata.json
+          jf rt bce github-actions-build 1
+          jf rt bag github-actions-build 1
+          jf rt bp github-actions-build 1 --dry-run
+          jf rt bp github-actions-build 1
+          jf bs --vuln --fail=false
+
+      - name: Promote build
+        if: github.ref == 'refs/heads/main'
+        run: |
+          jf rt build-promote github-actions-build 1 test-local-basselm --status=released
