@@ -57,14 +57,12 @@ jobs:
       - name: Deploy build-info
         run: |
           # Create metadata.json with the required fields
-          cat <<EOF > metadata.json
-{
-  "dockerImage": {
-    "tag": "0.1.2-beta.14",
-    "sha256": "${{ steps.digest.outputs.digest }}"
-  }
-}
-EOF
+          echo "{
+            \"dockerImage\": {
+              \"tag\": \"0.1.2-beta.14\",
+              \"sha256\": \"${{ steps.digest.outputs.digest }}\"
+            }
+          }" > metadata.json
 
           # Optional: Print the content for debugging
           cat metadata.json
