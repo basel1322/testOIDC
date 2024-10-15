@@ -41,9 +41,34 @@ jobs:
           jf docker push elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14 --build-name github-actions-build --build-number 1 --module $BUILD_MODULE
           jf rt build-publish github-actions-build 1
 
+      - name: Retrieve Docker Image Digest
+        id: digest
+        run: |
+          OUTPUT=$(jf rt docker-get elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14 --output=json)
+          echo "Raw output: $OUTPUT"  # Debugging line to check output
+          DIGEST=$(echo "$OUTPUT" | jq -r .digest)
+          if [ -z "$DIGEST" ]; then
+            echo "Error: Docker image digest not found."
+            exit 1
+          fi
+          echo "Digest: $DIGEST"  # Debugging line to check digest
+          echo "::set-output name=digest::$DIGEST"
+
       - name: Deploy build-info
         run: |
-          echo "elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14@${{ env.digest }}" > metadata.json
+          # Create metadata.json with the required fields
+          cat <<EOF > metadata.json
+{
+  "dockerImage": {
+    "tag": "0.1.2-beta.14",
+    "sha256": "${{ steps.digest.outputs.digest }}"
+  }
+}
+EOF
+
+          # Optional: Print the content for debugging
+          cat metadata.json
+
           jf rt build-docker-create test-local-basselm --image-file metadata.json
           jf rt bce github-actions-build 1
           jf rt bag github-actions-build 1
