@@ -52,7 +52,7 @@ jobs:
       - name: Deploy build-info
         run: |
           echo "elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14@${{ steps.push.outputs.digest }}" > metadata.json
-          jf rt build-docker-create github-actions-build 1 --image-file metadata.json
+          jf rt build-docker-create test-local-basselm --image-file metadata.json
           jf rt bce github-actions-build 1
           jf rt bag github-actions-build 1
           jf rt bp github-actions-build 1 --dry-run
