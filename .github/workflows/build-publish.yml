@@ -26,7 +26,7 @@ jobs:
           docker buildx create --use
           docker buildx build \
             --platform linux/amd64,linux/arm64 \
-            --tag elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14 \
+            --tag kimt.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14 \
             --push .
 
       - name: Set up JFrog CLI
@@ -43,7 +43,7 @@ jobs:
         id: create_metadata
         run: |
           # Inspect the pushed image and extract the digest
-          DIGEST=$(docker buildx imagetools inspect elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14 --format '{{ json .Manifest }}' | jq -r '.Descriptor.digest')
+          DIGEST=$(docker buildx imagetools inspect kimt.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14 --format '{{ json .Manifest }}' | jq -r '.Descriptor.digest')
           
           # Echo the digest to see the output
           echo "Image digest: $DIGEST"
@@ -54,7 +54,7 @@ jobs:
           fi
       
           # Ensure the correct format for the metadata.json
-          echo "elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14@$DIGEST" > metadata.json
+          echo "kimt.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14@$DIGEST" > metadata.json
       
           # Log the content of metadata.json for debugging
           echo "Content of metadata.json:"
