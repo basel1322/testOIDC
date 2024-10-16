@@ -74,8 +74,6 @@ jobs:
           jf rt bag github-actions-build 1
           jf rt bp github-actions-build 1 --dry-run
           jf rt bp github-actions-build 1
-          jf bs --vuln --fail=false
-
       - name: Promote build
         if: github.ref == 'refs/heads/main'
         run: |
