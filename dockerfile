@@ -8,8 +8,6 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 # Install app dependencies (using the lock file if available)
-RUN npm ci --production
-
 # Copy app source code
 COPY . .
 
@@ -17,4 +15,4 @@ COPY . .
 EXPOSE 8080
 
 # Start the app
-CMD ["npm", "start"]
+
