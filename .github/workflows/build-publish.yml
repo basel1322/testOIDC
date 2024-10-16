@@ -12,7 +12,7 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Set up QEMU
+      - name: Set up QEMU for cross-platform builds
         uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
@@ -21,9 +21,13 @@ jobs:
       - name: Login to JFrog Artifactory
         run: echo "${{ secrets.JF_TOKEN }}" | docker login ${{ secrets.JF_URL }} -u ${{ secrets.JF_USERNAME }} --password-stdin
 
-      - name: Build Docker Image
+      - name: Build and push multi-arch Docker image
         run: |
-          docker build -t elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14 .
+          docker buildx create --use
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            --tag elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14 \
+            --push .
 
       - name: Set up JFrog CLI
         uses: jfrog/setup-jfrog-cli@v4
@@ -34,12 +38,6 @@ jobs:
         run: |
           jf c add my-server --url=${{ secrets.JF_URL }} --user=${{ secrets.JF_USERNAME }} --password=${{ secrets.JF_TOKEN }} --interactive=false
           jf c use my-server
-
-      - name: Push Docker Image to JFrog Artifactory
-        id: push
-        run: |
-          export BUILD_MODULE="my-module"
-          jf docker push elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14 --build-name github-actions-build --build-number 1 --module $BUILD_MODULE
 
       - name: Create metadata.json
         id: create_metadata
@@ -58,7 +56,7 @@ jobs:
           echo "Using the following metadata.json:"
           cat metadata.json
           
-          jf rt build-docker-create  test-local-basselm --image-file metadata.json
+          jf rt build-docker-create test-local-basselm --image-file metadata.json
           jf rt bce github-actions-build 1
           jf rt bag github-actions-build 1
           jf rt bp github-actions-build 1 --dry-run
