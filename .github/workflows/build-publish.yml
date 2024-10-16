@@ -54,11 +54,12 @@ jobs:
           fi
       
           # Ensure the correct format for the metadata.json
-          echo "{\"name\": \"elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux\", \"digest\": \"${DIGEST}\"}" > metadata.json
+          echo "elinaf.jfrog.io/test-local-basselm/oceaneeringgg/actions-runner-linux:0.1.2-beta.14@$DIGEST" > metadata.json
       
           # Log the content of metadata.json for debugging
           echo "Content of metadata.json:"
           cat metadata.json
+
 
 
 
